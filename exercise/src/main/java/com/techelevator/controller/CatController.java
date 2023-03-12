@@ -5,10 +5,7 @@ import com.techelevator.model.CatCard;
 import com.techelevator.services.CatFactService;
 import com.techelevator.services.CatPicService;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
@@ -26,30 +23,23 @@ public class CatController {
         this.catPicService = catPicService;
     }
 
-    @RequestMapping(path="/api/cards", method = RequestMethod.GET)
-    public List<CatCard> list(@RequestParam int catCardId,
-                              @RequestParam String imgUrl,
-                              @RequestParam String catFact,
-                              @RequestParam String caption) {
-
+    @RequestMapping(path="/api/cards", method=RequestMethod.GET)
+    public List<CatCard> getUserCollection(){
         return catCardDao.list();
     }
 
-    @RequestMapping(path = "/api/cards/{id}", method = RequestMethod.GET)
-    public CatCard get (long id) {
-        CatCard catCard = catCardDao.get(id);
-        if (catCard == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Cat Card not found");
-        } else {
-            return catCardDao.get(id);
-        }
-
-    }
-
-    @RequestMapping(path = "/api/cards/random", method = RequestMethod.GET)
-    public CatCard getRandom (long id) {
+    @RequestMapping(path="/api/cards/{id}", method=RequestMethod.GET)
+    public CatCard getByID(@PathVariable int id) {
         return catCardDao.get(id);
     }
 
-    //Can you see it now
+    @RequestMapping(path="/api/cards/random", method=RequestMethod.GET)
+    public CatCard getNew() {
+        CatCard newCard = new CatCard();
+        newCard.setCatFact(catFactService.getFact().getText());
+        newCard.setImgUrl(catPicService.getPic().getFile());
+        newCard.setCaption("");
+        return newCard;
+    }
+
 }
